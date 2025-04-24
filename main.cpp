@@ -6,29 +6,46 @@ namespace http = boost::beast::http;
 namespace net = boost::asio;
 using tcp = net::ip::tcp;
 
-int main() {
-    try {
-        net::io_context ioc;
-        tcp::resolver resolver(ioc); // turns domain into IP addresses
-        tcp::socket socket(ioc); // connect to server
+// abstract class
+class HttpClient {
+    public:
+    virtual void makeRequest() = 0;
+    virtual ~HttpClient() = default;
+};
 
-        auto const results = resolver.resolve("httpbin.org", "80"); // look up IP addresses for httpbin.org on port 80
-        net::connect(socket, results.begin(), results.end()); // connect socket to first available IP address
+class BoostHttpClient : public HttpClient {
+    public:
+    void makeRequest() override {
+        try {
+            net::io_context ioc; // engine
+            tcp::resolver resolver(ioc); // turns domain into IP addresses
+            tcp::socket socket(ioc); // connect to server
 
-        http::request<http::string_body> req(http::verb::get, "/get", 11); // create GET request
-        req.set(http::field::host, "httpbin.org"); // set header
+            auto const results = resolver.resolve("httpbin.org", "80"); // look up IP addresses for httpbin.org on port 80
+            net::connect(socket, results.begin(), results.end()); // connect socket to first available IP address
 
-        http::write(socket, req); // send http request over the network
+            http::request<http::string_body> req(http::verb::get, "/get", 11); // create GET request
+            req.set(http::field::host, "httpbin.org"); // set header
 
-        boost::beast::flat_buffer buffer; // temporary storage buffer that catches raw bytes from server
-        http::response<http::dynamic_body> res; // prepares an http response object
-        http::read(socket, buffer, res); // parses data into readable version into res
+            http::write(socket, req); // send http request over the network
 
-        std::cout << res << std::endl; // print response
+            boost::beast::flat_buffer buffer; // temporary storage buffer that catches raw bytes from server
+            http::response<http::dynamic_body> res; // prepares an http response object
+            http::read(socket, buffer, res); // parses data into readable version into res
 
-        socket.shutdown(tcp::socket::shutdown_both); // shut down the socket
+            std::cout << res << std::endl; // print response
 
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+            socket.shutdown(tcp::socket::shutdown_both); // shut down the socket
+
+        } catch (const std::exception& e) {
+            std::cerr << "Error: " << e.what() << std::endl;
+        }
     }
+};
+
+int main() {
+    BoostHttpClient client;
+    client.makeRequest();
+
+    return 0;
 }
