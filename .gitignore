@@ -1,0 +1,4 @@
+cmake-build-*/
+weather_app
+.DS_Store
+.idea/
