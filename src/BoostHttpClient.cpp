@@ -7,16 +7,19 @@ namespace http = boost::beast::http;
 namespace net = boost::asio;
 using tcp = net::ip::tcp;
 
+// initialize the resolver and socket objects in the constructor
+BoostHttpClient::BoostHttpClient() : resolver(ioc), socket(ioc) {}
+
+// connection method
+void BoostHttpClient::connect(const std::string& host) {
+    auto const results = resolver.resolve(host, "80");
+    net::connect(socket, results.begin(), results.end());
+}
+
+// make request method
 void BoostHttpClient::makeRequest() {
     try {
-        // set up for looking up the server and opening a connection
-        net::io_context ioc;
-        tcp::resolver resolver(ioc);
-        tcp::socket socket(ioc);
-
-        // resolve domain name and connect to server
-        auto const results = resolver.resolve("httpbin.org", "80");
-        net::connect(socket, results.begin(), results.end());
+        connect("httpbin.org");
 
         // build GET request
         http::request<http::string_body> req(http::verb::get, "/get", 11);

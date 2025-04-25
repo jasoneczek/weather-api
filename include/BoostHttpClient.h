@@ -2,10 +2,24 @@
 #define BOOSTHTTPCLIENT_H
 
 #include "HttpClient.h"
+#include <boost/beast.hpp>
+#include <boost/asio.hpp>
+
+namespace http = boost::beast::http;
+namespace net = boost::asio;
+using tcp = net::ip::tcp;
 
 class BoostHttpClient : public HttpClient {
-  public:
+    protected:
+    net::io_context ioc;
+    tcp::resolver resolver;
+    tcp::socket socket;
+
+    public:
+    BoostHttpClient(); // constructor
+    void connect(const std::string& host); // helper method
     void makeRequest() override;
+    ~BoostHttpClient() override = default;
 };
 
 #endif //BOOSTHTTPCLIENT_H
