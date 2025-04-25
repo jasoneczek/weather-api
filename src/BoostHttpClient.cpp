@@ -17,13 +17,13 @@ void BoostHttpClient::connect(const std::string& host) {
 }
 
 // make request method
-void BoostHttpClient::makeRequest() {
+void BoostHttpClient::makeRequest(const std::string& host, const std::string& target) {
     try {
-        connect("httpbin.org");
+        connect(host);
 
         // build GET request
-        http::request<http::string_body> req(http::verb::get, "/get", 11);
-        req.set(http::field::host, "httpbin.org"); // set header
+        http::request<http::string_body> req(http::verb::get, target, 11);
+        req.set(http::field::host, host); // set header
 
         // send request to server
         http::write(socket, req);
@@ -33,8 +33,10 @@ void BoostHttpClient::makeRequest() {
         http::response<http::dynamic_body> res;
         http::read(socket, buffer, res);
 
-        // print response
-        std::cout << res << std::endl;
+        // Had to switch from 'std::cout << res' to this because WeatherAPI's response
+        // wasn't printing correctly — 'res' works with httpbin.org but for WeatherAPI,
+        // manually extracting the body content using buffers_to_string
+        std::cout << boost::beast::buffers_to_string(res.body().data()) << std::endl;
 
         socket.shutdown(tcp::socket::shutdown_both);
 

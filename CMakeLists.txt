@@ -14,4 +14,5 @@ add_executable(weather_app
         main.cpp
         src/BoostHttpClient.cpp
         src/WeatherClient.cpp
+        src/Config.cpp
 )
