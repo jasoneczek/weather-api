@@ -12,4 +12,5 @@ include_directories(include)
 add_executable(weather_app
         main.cpp
         src/BoostHttpClient.cpp
+        src/WeatherClient.cpp
 )

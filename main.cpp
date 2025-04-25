@@ -1,8 +1,8 @@
-#include "BoostHttpClient.h"
+#include "WeatherClient.h"
 
 int main() {
-    BoostHttpClient client;
-    client.makeRequest();
+    WeatherClient weather;
+    weather.getWeather();
 
     return 0;
 }
