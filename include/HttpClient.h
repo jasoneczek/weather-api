@@ -5,7 +5,7 @@
 
 class HttpClient {
   public:
-    virtual void makeRequest(const std::string& host, const std::string& target) = 0;
+    virtual std::string makeRequest(const std::string& host, const std::string& target) = 0; // now returns a string
     virtual ~HttpClient() = default;
 };
 

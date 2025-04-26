@@ -18,7 +18,7 @@ class BoostHttpClient : public HttpClient {
     public:
     BoostHttpClient(); // constructor
     void connect(const std::string& host); // helper method
-    void makeRequest(const std::string& host, const std::string& target) override; // added parameters
+    std::string makeRequest(const std::string& host, const std::string& target) override; // added parameters
     ~BoostHttpClient() override = default;
 };
 
