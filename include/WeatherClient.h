@@ -2,6 +2,8 @@
 #define WEATHERCLIENT_H
 
 #include "BoostHttpClient.h"
+#include <nlohmann/json.hpp>
+#include <string>
 
 class WeatherClient {
   public:
@@ -9,6 +11,8 @@ class WeatherClient {
 
   private:
     BoostHttpClient httpClient;
+    std::string getApiKey();
+    nlohmann::json parseJson(const std::string& response);
 };
 
 #endif //WEATHERCLIENT_H
