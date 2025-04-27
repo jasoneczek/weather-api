@@ -3,13 +3,15 @@
 #include "JsonParser.h"
 #include <iostream>
 
-using json = nlohmann::json;
+std::pair<WeatherData, AirQualityData> WeatherClient::getWeather(std::string& city) {
+  // create empty WeatherData and AirQualityData objects
+  // to fill from the API response
+  WeatherData weather;
+  AirQualityData airQuality;
 
-void WeatherClient::getWeather(std::string& city) {
-  std::string apiKey = Config::getApiKey();
+  std::string apiKey = getApiKey();
   if (apiKey.empty()) {
-    std::cerr << "API Key not found" << std::endl;
-    return;
+    throw std::runtime_error("API Key is empty");
   }
 
   const std::string host = "api.weatherapi.com";
@@ -18,58 +20,16 @@ void WeatherClient::getWeather(std::string& city) {
   const std::string response = httpClient.makeRequest(host, target);
 
   try {
-    auto parsed = parseJson(response);
+    json parsed = parseJson(response);
 
-    // extracting fields from JSON into local variables for now
-    // will refactor into Weather struct later
-
-    // matching field names and types from https://www.weatherapi.com/docs
-
-    // WEATHER FIELDS
-    auto location = parsed["location"]["name"].get<std::string>();
-    auto country = parsed["location"]["country"].get<std::string>();
-    double tempC = parsed["current"]["temp_c"].is_number() ? parsed["current"]["temp_c"].get<double>() : 0.0;
-    double tempF = parsed["current"]["temp_f"].is_number() ? parsed["current"]["temp_f"].get<double>() : 0.0;
-    auto condition = parsed["current"]["condition"]["text"].get<std::string>();
-    double windKph = parsed["current"]["wind_kph"].is_number() ? parsed["current"]["wind_kph"].get<double>() : 0.0;
-    double windMph = parsed["current"]["wind_mph"].is_number() ? parsed["current"]["wind_mph"].get<double>() : 0.0;
-    int humidity = parsed["current"]["humidity"].is_number() ? parsed["current"]["humidity"].get<int>() : 0;
-
-    std::cout << "Weather for " << location << ", " << country << ":\n";
-    std::cout << "Temperature: " << tempC << "°C / " << tempF << "°F\n";
-    std::cout << "Condition: " << condition << "\n";
-    std::cout << "Wind: " << windKph << "kph / " << windMph << "mph\n";
-    std::cout << "Humidity: " << humidity << "%\n";
-
-    // AIR QUALITY FIELDS
-    // check if air quality is available
-    if (parsed["current"].contains("air_quality")) {
-      const auto& air = parsed["current"]["air_quality"];
-
-      int epaIndex = air.contains("us-epa-index")
-          && air["us-epa-index"].is_number_integer()
-          ? air["us-epa-index"].get<int>()
-          : -1;
-
-      std::string epaCategory;
-      switch (epaIndex) {
-        case 1: epaCategory = "Good"; break;
-        case 2: epaCategory = "Moderate"; break;
-        case 3: epaCategory = "Unhealthy for Sensitive Groups"; break;
-        case 4: epaCategory = "Unhealthy"; break;
-        case 5: epaCategory = "Very Unhealthy"; break;
-        case 6: epaCategory = "Hazardous"; break;
-        default: epaCategory = "Unknown"; break; // if air quality not available
-      }
-
-      std::cout << "Air Quality: " << epaCategory << "\n";
-    } else {
-      std::cout << "Air quality data not available.\n";
-    }
+    weather.extractFromJson(parsed);
+    airQuality.extractFromJson(parsed);
 
   } catch (const std::exception &e) {
     std::cerr << "Error parsing json: " << e.what() << std::endl;
+    throw; // rethrow so main() can handle
   }
+  return {weather, airQuality}; // return data together as pair
 }
 
 // ****************************

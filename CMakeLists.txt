@@ -16,4 +16,6 @@ add_executable(weather_app
         src/WeatherClient.cpp
         src/Config.cpp
         src/JsonParser.cpp
+        src/WeatherData.cpp
+        src/AirQualityData.cpp
 )
