@@ -19,7 +19,16 @@ void WeatherClient::getWeather(std::string& city) {
 
   try {
     auto parsed = parseJson(response);
-    std::cout << parsed.dump(2) << std::endl; // pretty print full json response for testing
+
+    // extracting fields from JSON into local variables for now
+    // will refactor into Weather struct later
+    std::string location = parsed["location"]["name"].get<std::string>();
+    std::string country = parsed["location"]["country"].get<std::string>();
+    double tempC = parsed["current"]["temp_c"].is_number() ? parsed["current"]["temp_c"].get<double>() : 0.0;
+    double tempF = parsed["current"]["temp_f"].is_number() ? parsed["current"]["temp_f"].get<double>() : 0.0;
+
+    std::cout << "Weather for " << location << ", " << country << ":\n";
+    std::cout << "Temperature: " << tempC << "°C / " << tempF << "°F\n";
 
   } catch (const std::exception &e) {
     std::cerr << "Error parsing json: " << e.what() << std::endl;
