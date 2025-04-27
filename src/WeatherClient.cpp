@@ -5,19 +5,17 @@
 
 using json = nlohmann::json;
 
-void WeatherClient::getWeather() {
+void WeatherClient::getWeather(std::string& city) {
   std::string apiKey = Config::getApiKey();
   if (apiKey.empty()) {
     std::cerr << "API Key not found" << std::endl;
     return;
   }
 
-  // temporary hardcoded city name request for testing
-  std::string host = "api.weatherapi.com";
-  std::string city = "Opole";
-  std::string target = "/v1/current.json?key=" + apiKey + "&q=" + city + "&aqi=yes";
+  const std::string host = "api.weatherapi.com";
+  const std::string target = buildTarget(apiKey, city);
 
-  std::string response = httpClient.makeRequest(host, target);
+  const std::string response = httpClient.makeRequest(host, target);
 
   try {
     auto parsed = parseJson(response);
@@ -28,7 +26,9 @@ void WeatherClient::getWeather() {
   }
 }
 
+// ****************************
 // HELPER FUNCTIONS
+// ****************************
 
 // get api key
 std::string WeatherClient::getApiKey() {
@@ -38,4 +38,9 @@ std::string WeatherClient::getApiKey() {
 // parse JSON
 json WeatherClient::parseJson(const std::string& response) {
   return JsonParser::parse(response);
+}
+
+// build target - added in case I add more user options like forecast and history later
+std::string WeatherClient::buildTarget(const std::string& apiKey, const std::string& city) {
+  return "/v1/current.json?key=" + apiKey + "&q=" + city + "&aqi=yes";
 }
