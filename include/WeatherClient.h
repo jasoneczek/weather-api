@@ -20,6 +20,9 @@ class WeatherClient {
     static std::string getApiKey(); // retrieves api key from env variable
     static json parseJson(const std::string& response); // parson JSON response string into JSON object
     static std::string buildTarget(const std::string& apiKey, const std::string& city); // builds url
+
+    // helper function to encode city names with spaces
+    static std::string urlEncode(const std::string& str);
 };
 
 #endif //WEATHERCLIENT_H

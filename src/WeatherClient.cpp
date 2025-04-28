@@ -48,5 +48,19 @@ json WeatherClient::parseJson(const std::string& response) {
 
 // build target - added in case I add more user options like forecast and history later
 std::string WeatherClient::buildTarget(const std::string& apiKey, const std::string& city) {
-  return "/v1/current.json?key=" + apiKey + "&q=" + city + "&aqi=yes";
+  std::string encodedCity = urlEncode(city); // added to encode city before building target
+  return "/v1/current.json?key=" + apiKey + "&q=" + encodedCity + "&aqi=yes";
+}
+
+// url encode city names to handle spaces
+std::string WeatherClient::urlEncode(const std::string& str) {
+  std::string encoded;
+  for (const char c : str) {
+    if (c == ' ') {
+      encoded += "%20";
+    } else {
+      encoded += c;
+    }
+  }
+  return encoded;
 }
