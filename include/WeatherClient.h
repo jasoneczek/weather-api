@@ -5,6 +5,7 @@
 #include "WeatherData.h"
 #include "AirQualityData.h"
 #include <nlohmann/json.hpp>
+#include <string>
 
 using json = nlohmann::json;
 

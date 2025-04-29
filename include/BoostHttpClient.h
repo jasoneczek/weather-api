@@ -11,15 +11,17 @@ using tcp = net::ip::tcp;
 
 class BoostHttpClient : public HttpClient {
     protected:
-    net::io_context ioc;
-    tcp::resolver resolver;
-    tcp::socket socket;
+        net::io_context ioc;
+        tcp::resolver resolver;
+        tcp::socket socket;
 
     public:
-    BoostHttpClient(); // constructor
-    void connect(const std::string& host); // helper method
-    std::string makeRequest(const std::string& host, const std::string& target) override; // added parameters
-    ~BoostHttpClient() override = default;
+        BoostHttpClient(); // constructor
+        std::string makeRequest(const std::string& host, const std::string& target) override; // added parameters
+        ~BoostHttpClient() override = default;
+
+    private:
+        void connect(const std::string& host); // helper method
 };
 
 #endif //BOOSTHTTPCLIENT_H

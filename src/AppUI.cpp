@@ -4,7 +4,7 @@
 void AppUI::run() {
     std::string city;
 
-    std::cout << "Enter city name: ";
+    std::cout << "\nEnter city name: ";
     std::getline(std::cin, city);
 
     try {
@@ -15,7 +15,7 @@ void AppUI::run() {
         printWeather(weather);
         printAirQuality(airQuality);
     } catch (const std::exception& e) {
-      std::cerr << "Error: " << e.what() << "\n";
+      std::cerr << "\nError: " << e.what() << "\n";
     }
 }
 
@@ -39,3 +39,4 @@ void AppUI::printAirQuality(const AirQualityData& airQuality) {
         std::cout << "\nAir quality data not available.\n";
     }
 }
+

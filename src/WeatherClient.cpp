@@ -22,12 +22,20 @@ std::pair<WeatherData, AirQualityData> WeatherClient::getWeather(std::string& ci
   try {
     json parsed = parseJson(response);
 
+    // Check if API returned an error
+    if (parsed.contains("error")) {
+      int errorCode = parsed["error"]["code"].get<int>();
+      auto errorMessage = parsed["error"]["message"].get<std::string>();
+
+      throw std::runtime_error(
+        "API Error (HTTP 400, Code "+ std::to_string(errorCode) + "): " + errorMessage);
+    }
+
     weather.extractFromJson(parsed);
     airQuality.extractFromJson(parsed);
 
   } catch (const std::exception &e) {
-    std::cerr << "Error parsing json: " << e.what() << std::endl;
-    throw; // rethrow so main() can handle
+    throw;
   }
   return {weather, airQuality}; // return data together as pair
 }

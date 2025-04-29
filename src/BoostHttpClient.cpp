@@ -35,10 +35,10 @@ std::string BoostHttpClient::makeRequest(const std::string& host, const std::str
 
         socket.shutdown(tcp::socket::shutdown_both);
 
-        return buffers_to_string(res.body().data()); // returns response as a string
+        return buffers_to_string(res.body().data());
 
     } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-        return ""; // makeRequest now expects a string to be returned
+        std::cerr << "HTTP Client Error: " << e.what() << "\n";
+        return "";
     }
 }
