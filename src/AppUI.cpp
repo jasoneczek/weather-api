@@ -2,20 +2,31 @@
 #include <iostream>
 
 void AppUI::run() {
+    WeatherClient client;
     std::string city;
 
-    std::cout << "\nEnter city name: ";
-    std::getline(std::cin, city);
+    while (true) {
+        std::cout << "\nEnter city name (or 0 to exit): ";
+        std::getline(std::cin, city);
 
-    try {
-        WeatherClient client;
-        auto [weather, airQuality] = client.getWeather(city);
+        if (city == "0") {
+            std::cout << "Goodbye!\n";
+            break;
+        }
 
-        // print weather and air quaility data
-        printWeather(weather);
-        printAirQuality(airQuality);
-    } catch (const std::exception& e) {
-      std::cerr << "\nError: " << e.what() << "\n";
+        if (city.empty()) {
+          std::cout << "Please enter a city name.\n";
+          continue;
+        }
+
+        try {
+            auto [weather, airQuality] = client.getWeather(city);
+            printWeather(weather);
+            printAirQuality(airQuality);
+        } catch (const std::exception& e) {
+            std::cout << "\nError: " << e.what() << "\n";
+        }
+        std::cout << "\n=========================================\n";
     }
 }
 
@@ -24,9 +35,9 @@ void AppUI::run() {
 // *********************************
 
 void AppUI::printWeather(const WeatherData& weather) {
-    std::cout << "\n*************************************\n";
-    std::cout << "Current Weather for " << weather.location << ", " << weather.country << ":\n";
-    std::cout << "Temperature: " << weather.tempC << "°C / " << weather.tempF << "°F\n";
+    std::cout << "\n=========================================\n";
+    std::cout << "\nCurrent Weather for " << weather.location << ", " << weather.country << ":\n";
+    std::cout << "\nTemperature: " << weather.tempC << "°C / " << weather.tempF << "°F\n";
     std::cout << "Condition: " << weather.condition << "\n";
     std::cout << "Wind: " << weather.windKph << "kph / " << weather.windMph << "mph\n";
     std::cout << "Humidity: " << weather.humidity << "%\n";

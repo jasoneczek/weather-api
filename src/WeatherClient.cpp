@@ -1,10 +1,10 @@
 #include "WeatherClient.h"
 #include "Config.h"
 #include "JsonParser.h"
-#include <iostream>
 
 std::pair<WeatherData, AirQualityData> WeatherClient::getWeather(std::string& city) {
-  // create empty WeatherData and AirQualityData objects
+
+// create empty WeatherData and AirQualityData objects
   // to fill from the API response
   WeatherData weather;
   AirQualityData airQuality;
@@ -16,27 +16,22 @@ std::pair<WeatherData, AirQualityData> WeatherClient::getWeather(std::string& ci
 
   const std::string host = "api.weatherapi.com";
   const std::string target = buildTarget(apiKey, city);
-
   const std::string response = httpClient.makeRequest(host, target);
 
-  try {
-    json parsed = parseJson(response);
+  json parsed = parseJson(response);
 
-    // Check if API returned an error
-    if (parsed.contains("error")) {
-      int errorCode = parsed["error"]["code"].get<int>();
-      auto errorMessage = parsed["error"]["message"].get<std::string>();
+  // Check if API returned an error
+  if (parsed.contains("error")) {
+    int errorCode = parsed["error"]["code"].get<int>();
+    auto errorMessage = parsed["error"]["message"].get<std::string>();
 
-      throw std::runtime_error(
-        "API Error (HTTP 400, Code "+ std::to_string(errorCode) + "): " + errorMessage);
+    throw std::runtime_error(
+      "API Error (HTTP 400, Code "+ std::to_string(errorCode) + "): " + errorMessage);
     }
 
     weather.extractFromJson(parsed);
     airQuality.extractFromJson(parsed);
 
-  } catch (const std::exception &e) {
-    throw;
-  }
   return {weather, airQuality}; // return data together as pair
 }
 

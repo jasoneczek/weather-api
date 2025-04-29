@@ -22,7 +22,7 @@ class WeatherClient {
     static json parseJson(const std::string& response); // parson JSON response string into JSON object
     static std::string buildTarget(const std::string& apiKey, const std::string& city); // builds url
 
-    // helper function to encode city names with spaces
+    // helper function to encode city names with spaces ex. New York
     static std::string urlEncode(const std::string& str);
 };
 
