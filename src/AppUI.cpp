@@ -1,9 +1,12 @@
 #include "AppUI.h"
 #include <iostream>
+#include <iomanip> // for std::setw
 
 void AppUI::run() {
     WeatherClient client;
     std::string city;
+
+    std::cout << std::setw(14) << std::left << "\n========== WELCOME TO THE WEATHER REPORT ==========\n";
 
     while (true) {
         std::cout << "\nEnter city name (or 0 to exit): ";
@@ -21,33 +24,27 @@ void AppUI::run() {
 
         try {
             auto [weather, airQuality] = client.getWeather(city);
-            printWeather(weather);
-            printAirQuality(airQuality);
+            printReport(weather, airQuality);
         } catch (const std::exception& e) {
             std::cout << "\nError: " << e.what() << "\n";
         }
-        std::cout << "\n=========================================\n";
     }
 }
 
-// *********************************
-// HELPER FUNCTIONS FOR PRINTING DATA
-// *********************************
+// print weather report
+void AppUI::printReport(const WeatherData& weather, const AirQualityData& airQuality) {
+    std::cout << "\n========== Current Weather for " << weather.location << ", " << weather.country << " ==========\n";
+    std::cout << "\n";
+    std::cout << std::setw(14) << std::left << "Temperature" << " | " << weather.tempC << "°C / " << weather.tempF << "°F\n";
+    std::cout << std::setw(14) << std::left << "Condition" << " | " << weather.condition << "\n";
+    std::cout << std::setw(14) << std::left << "Wind" << " | " << weather.windKph << "kph / " << weather.windMph << "mph\n";
+    std::cout << std::setw(14) << std::left << "Humidity" << " | " << weather.humidity << "%\n";
 
-void AppUI::printWeather(const WeatherData& weather) {
-    std::cout << "\n=========================================\n";
-    std::cout << "\nCurrent Weather for " << weather.location << ", " << weather.country << ":\n";
-    std::cout << "\nTemperature: " << weather.tempC << "°C / " << weather.tempF << "°F\n";
-    std::cout << "Condition: " << weather.condition << "\n";
-    std::cout << "Wind: " << weather.windKph << "kph / " << weather.windMph << "mph\n";
-    std::cout << "Humidity: " << weather.humidity << "%\n";
-}
-
-void AppUI::printAirQuality(const AirQualityData& airQuality) {
     if (airQuality.epaIndex != -1) {
-        std::cout << "Air Quality: " << airQuality.epaCategory << "\n";
+        std::cout << std::setw(14) << std::left << "Air Quality" << " | " << airQuality.epaCategory << "\n";
     } else {
         std::cout << "\nAir quality data not available.\n";
     }
 }
+
 

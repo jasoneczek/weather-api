@@ -8,8 +8,7 @@ class AppUI {
     void run();
 
   private:
-    void printWeather(const WeatherData& weather);
-    void printAirQuality(const AirQualityData& airQuality);
+    void printReport(const WeatherData& weather, const AirQualityData& airQuality);
 };
 
 #endif //APPUI_H
