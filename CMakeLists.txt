@@ -7,6 +7,10 @@ set(CMAKE_CXX_STANDARD 20)
 find_package(Boost 1.87.0 REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
+# SQLITE
+find_package(SQLite3 REQUIRED)
+include_directories(${SQLite3_INCLUDE_DIRS})
+
 include_directories(include)
 include_directories(/opt/homebrew/include)
 
@@ -19,4 +23,8 @@ add_executable(weather_app
         src/WeatherData.cpp
         src/AirQualityData.cpp
         src/AppUI.cpp
+        src/db/Database.cpp
 )
+
+# LINK SQL LIBRARIES
+target_link_libraries(weather_app PRIVATE SQLite::SQLite3)

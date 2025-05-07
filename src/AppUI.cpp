@@ -1,8 +1,16 @@
 #include "AppUI.h"
 #include <iostream>
 #include <iomanip> // for std::setw
+#include <db/Database.h>
 
 void AppUI::run() {
+    try {
+      Database db("weather.sqlite");
+    } catch (const std::exception& e) {
+      std::cerr << e.what() << std::endl;
+      return;
+    }
+
     WeatherClient client;
     std::string city;
 
