@@ -6,6 +6,10 @@
 void AppUI::run() {
     try {
       Database db("weather.sqlite");
+
+      // temporary test to insert a user
+      db.addUser("testuser", "user@test.com");
+
     } catch (const std::exception& e) {
       std::cerr << e.what() << std::endl;
       return;
