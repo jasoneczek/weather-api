@@ -18,7 +18,7 @@ void AppUI::run() {
       AuthService auth(db);
 
       // test inserting a user through AuthService
-      auth.registerUser("authtestuser", "authtestuser@example.com");
+      auth.registerUser("hashtestuser", "hashtestuser@example.com", "hashtest123");
 
     } catch (const std::exception& e) {
       std::cerr << e.what() << std::endl;

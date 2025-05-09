@@ -6,8 +6,8 @@
 // ** this method differs from the insertUser function from the class lab #6
 // includes error checks and uses SQLITE_TRANSIENT for safety
 // throws C++ exceptions if something goes wrong
-static void insertUser(sqlite3* db, const std::string& name, const::std::string& email) {
-  const char* createSql = "INSERT INTO users (name, email) VALUES (?, ?)"; // placeholders for the name and email
+static void insertUser(sqlite3* db, const std::string& name, const::std::string& email, const std::string& passwordHash, const std::string& role) {
+  const char* createSql = "INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)"; // placeholders for the name and email
   sqlite3_stmt* stmt;
 
   // prepare for execution
@@ -19,6 +19,8 @@ static void insertUser(sqlite3* db, const std::string& name, const::std::string&
   // bind name and email string into placeholders
   sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_TRANSIENT);
   sqlite3_bind_text(stmt, 2, email.c_str(), -1, SQLITE_TRANSIENT);
+  sqlite3_bind_text(stmt, 3, passwordHash.c_str(), -1, SQLITE_TRANSIENT);
+  sqlite3_bind_text(stmt, 4, role.c_str(), -1, SQLITE_TRANSIENT);
 
   // run the statement
   if (sqlite3_step(stmt) != SQLITE_DONE) {
@@ -52,7 +54,9 @@ void Database::initDB() {
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
-      email TEXT UNIQUE NOT NULL
+      email TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      role TEXT NOT NULL DEFAULT 'user'
     );
   )sql";
 
@@ -68,6 +72,6 @@ void Database::initDB() {
 }
 
 // call insert user helper function
-void Database::addUser(const std::string& name, const std::string& email) {
-  insertUser(db, name, email);
+void Database::addUser(const std::string& name, const std::string& email, const std::string& passwordHash, const std::string& role) {
+  insertUser(db, name, email, passwordHash, role);
 }

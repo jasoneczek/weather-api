@@ -11,7 +11,8 @@ class Database {
     Database(const std::string& dbPath); // constructor
     ~Database();
 
-    void addUser(const std::string& name, const std::string& email);
+    // added parameters
+    void addUser(const std::string& name, const std::string& email, const std::string& passwordHash, const std::string& role = "user");
 
   private:
     sqlite3 *db; // pointer to database connection

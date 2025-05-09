@@ -13,7 +13,8 @@ class AuthService {
     // constructor gives access to db when creating an AuthService
     AuthService(std::shared_ptr<Database> db);
 
-    bool registerUser(const std::string& name, const std::string& email);
+    // added a new parameter for the raw password
+    bool registerUser(const std::string& name, const std::string& email, const std::string& password, const std::string& role = "user");
 };
 
 #endif //AUTHSERVICES_H

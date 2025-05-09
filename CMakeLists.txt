@@ -24,6 +24,8 @@ add_executable(weather_app
         src/AirQualityData.cpp
         src/AppUI.cpp
         src/db/Database.cpp
+        src/auth/AuthService.cpp
+        src/auth/PasswordManager.cpp
 )
 
 # LINK SQL LIBRARIES
