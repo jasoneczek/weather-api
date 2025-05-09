@@ -2,13 +2,23 @@
 #include <iostream>
 #include <iomanip> // for std::setw
 #include <db/Database.h>
+#include <auth/AuthService.h>
 
 void AppUI::run() {
     try {
-      Database db("weather.sqlite");
+      // Database db("weather.sqlite");
 
       // temporary test to insert a user
-      db.addUser("testuser", "user@test.com");
+      // db.addUser("testuser", "user@test.com");
+
+      // new shared db instance
+      auto db = std::make_shared<Database>("weather.sqlite");
+
+      // create an AuthService and give it access to db
+      AuthService auth(db);
+
+      // test inserting a user through AuthService
+      auth.registerUser("authtestuser", "authtestuser@example.com");
 
     } catch (const std::exception& e) {
       std::cerr << e.what() << std::endl;
