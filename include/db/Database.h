@@ -8,8 +8,10 @@
 
 class Database {
   public:
-    Database(const std::string& dbPath); // constructor
+    explicit Database(const std::string& dbPath); // constructor
     ~Database();
+
+    sqlite3* getRawDB() const; // to safely expose raw pointer
 
     // added parameters
     void addUser(const std::string& name, const std::string& email, const std::string& passwordHash, const std::string& role = "user");

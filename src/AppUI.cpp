@@ -6,10 +6,6 @@
 
 void AppUI::run() {
     try {
-      // Database db("weather.sqlite");
-
-      // temporary test to insert a user
-      // db.addUser("testuser", "user@test.com");
 
       // new shared db instance
       auto db = std::make_shared<Database>("weather.sqlite");
@@ -19,6 +15,14 @@ void AppUI::run() {
 
       // test inserting a user through AuthService
       auth.registerUser("hashtestuser", "hashtestuser@example.com", "hashtest123");
+
+      auto user = auth.login("hashtestuser@example.com", "hashtest123");
+
+      if (user) {
+          std::cout << "Login successful" << std::endl;
+      } else {
+          std::cout << "Login failed" << std::endl;
+      }
 
     } catch (const std::exception& e) {
       std::cerr << e.what() << std::endl;

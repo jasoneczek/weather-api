@@ -2,11 +2,9 @@
 #include <iostream>
 
 // helper function to insert a new user into users table
-
-// ** this method differs from the insertUser function from the class lab #6
-// includes error checks and uses SQLITE_TRANSIENT for safety
-// throws C++ exceptions if something goes wrong
+// static - only Database.cpp has access
 static void insertUser(sqlite3* db, const std::string& name, const::std::string& email, const std::string& passwordHash, const std::string& role) {
+  // sqlite expects c style string
   const char* createSql = "INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)"; // placeholders for the name and email
   sqlite3_stmt* stmt;
 
@@ -16,7 +14,7 @@ static void insertUser(sqlite3* db, const std::string& name, const::std::string&
     throw std::runtime_error("Failed to prepare statement");
   }
 
-  // bind name and email string into placeholders
+  // bind values from the sql statement (fill in ?'s..)
   sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_TRANSIENT);
   sqlite3_bind_text(stmt, 2, email.c_str(), -1, SQLITE_TRANSIENT);
   sqlite3_bind_text(stmt, 3, passwordHash.c_str(), -1, SQLITE_TRANSIENT);
@@ -74,4 +72,9 @@ void Database::initDB() {
 // call insert user helper function
 void Database::addUser(const std::string& name, const std::string& email, const std::string& passwordHash, const std::string& role) {
   insertUser(db, name, email, passwordHash, role);
+}
+
+// expose raw sqlite3* for AuthService
+sqlite3* Database::getRawDB() const {
+  return db;
 }
