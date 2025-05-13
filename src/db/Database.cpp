@@ -65,7 +65,7 @@ void Database::initDB() {
     sqlite3_free(errMsg);
     throw std::runtime_error("Could not create database");
   } else {
-    std::cout << "Database created successfully." << std::endl;
+    std::cout << "Database initialized." << std::endl;
   }
 }
 

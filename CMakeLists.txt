@@ -26,6 +26,7 @@ add_executable(weather_app
         src/db/Database.cpp
         src/auth/AuthService.cpp
         src/auth/PasswordManager.cpp
+        src/auth/SessionManager.cpp
 )
 
 # LINK SQL LIBRARIES

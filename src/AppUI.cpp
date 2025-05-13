@@ -3,10 +3,12 @@
 #include <iomanip> // for std::setw
 #include <db/Database.h>
 #include <auth/AuthService.h>
+#include <auth/SessionManager.h>
 
 void AppUI::run() {
     std::shared_ptr<Database> db;
-    std::optional<User> currentUser;
+    // std::optional<User> currentUser;
+    SessionManager session;
 
     try {
         // create or connect to db
@@ -18,7 +20,13 @@ void AppUI::run() {
         std::string choice;
         std::cout << "[1] Register\n";
         std::cout << "[2] Login\n";
+        std::cout << "[0] Exit\n";
         std::getline(std::cin, choice);
+
+        if (choice == "0") {
+            std::cout << "Goodbye!\n";
+            return;
+        }
 
         std::string name, email, password;
 
@@ -36,7 +44,7 @@ void AppUI::run() {
                 std::cout << "Successfully registered!\n";
 
                 // create a temp user object for the session
-                currentUser = User(-1, name, "user");
+                session.login(User(-1, name, "user"));
             } else {
                 std::cout << "Failed to register!\n";
                 return;
@@ -53,7 +61,7 @@ void AppUI::run() {
             // try to login with authservice
             auto user = auth.login(email, password);
             if (user) {
-                currentUser = *user;
+                session.login(*user);
                 std::cout << "Login successful!\n";
             } else {
                 std::cout << "Failed to login!\n";
@@ -86,8 +94,11 @@ void AppUI::run() {
     }
 
     // === WELCOME ====
-    std::cout << "\nHello, " << currentUser->username << "\n";
-    std::cout << std::setw(14) << std::left << "\n========== WELCOME TO THE WEATHER REPORT ==========\n";
+    if (session.isLoggedIn()) {
+        std::cout << "\nHello, " << session.getCurrentUser()->username << "\n";
+        std::cout << std::setw(14) << std::left << "\n========== WELCOME TO THE WEATHER REPORT ==========\n";
+    }
+
 
     // === WEATHER QUERY LOOP ===
     WeatherClient client;
