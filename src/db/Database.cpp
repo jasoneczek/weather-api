@@ -42,7 +42,7 @@ Database::Database(const std::string& dbPath) {
 Database::~Database() {
   if (db) {
     sqlite3_close(db);
-    std::cout << "Closed database successfully." << std::endl;
+    // std::cout << "Closed database successfully." << std::endl;
   }
 }
 
@@ -65,7 +65,7 @@ void Database::initDB() {
     sqlite3_free(errMsg);
     throw std::runtime_error("Could not create database");
   } else {
-    std::cout << "Database initialized." << std::endl;
+    // std::cout << "Database initialized." << std::endl;
   }
 }
 

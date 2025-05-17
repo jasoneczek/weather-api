@@ -20,7 +20,7 @@ void AppUI::run() {
         std::string choice;
         std::cout << "[1] Register\n";
         std::cout << "[2] Login\n";
-        std::cout << "[0] Exit\n";
+        std::cout << "[0] Exit program\n";
         std::getline(std::cin, choice);
 
         if (choice == "0") {
@@ -53,19 +53,24 @@ void AppUI::run() {
 
         // login
         else if (choice == "2") {
-            std::cout << "Enter your email: ";
-            std::getline(std::cin, email);
-            std::cout << "Enter your password: ";
-            std::getline(std::cin, password);
+            while (true) {
+                std::cout << "Enter your email: ";
+                std::getline(std::cin, email);
+                std::cout << "Enter your password: ";
+                std::getline(std::cin, password);
 
-            // try to login with authservice
-            auto user = auth.login(email, password);
-            if (user) {
-                session.login(*user);
-                std::cout << "Login successful!\n";
-            } else {
-                std::cout << "Failed to login!\n";
-                return;
+                // try to login with authservice
+                auto user = auth.login(email, password);
+                if (user) {
+                    session.login(*user);
+                    std::cout << "Login successful!\n";
+                    break;
+                } else {
+                    std::cout << "Incorrect email or password. Try again or type 0 to exit.\n";
+                    std::string cancel;
+                    std::getline(std::cin, cancel);
+                    if (cancel == "0") return;
+                }
             }
         }
 
@@ -105,24 +110,38 @@ void AppUI::run() {
     std::string city;
 
     while (true) {
-        std::cout << "\nEnter city name (or 0 to exit): ";
-        std::getline(std::cin, city);
+        std::cout << "\nEnter:\n[1] Get weather\n[2] Logout\n[0] Exit program\n> ";
+        std::string choice;
+        std::getline(std::cin, choice);
 
-        if (city == "0") {
+        if (choice == "0") {
             std::cout << "Goodbye!\n";
             break;
         }
 
-        if (city.empty()) {
-          std::cout << "Please enter a city name.\n";
-          continue;
+        if (choice == "2") {
+            std::cout << "Logging out...\n";
+            session.logout();
+            return run(); // restart login or register
         }
 
-        try {
-            auto [weather, airQuality] = client.getWeather(city);
-            printReport(weather, airQuality);
-        } catch (const std::exception& e) {
-            std::cout << "\nError: " << e.what() << "\n";
+        if (choice == "1") {
+            std::cout << "Enter city name: ";
+            std::getline(std::cin, city);
+
+            if (city.empty()) {
+                std::cout << "Please enter a city name.\n";
+                continue;
+            }
+
+            try {
+                auto [weather, airQuality] = client.getWeather(city);
+                printReport(weather, airQuality);
+            } catch (const std::exception& e) {
+                std::cout << "\nError: " << e.what() << "\n";
+            }
+        } else {
+            std::cout << "Invalid input!\n";
         }
     }
 }
