@@ -137,6 +137,7 @@ void AppUI::run() {
             try {
                 auto [weather, airQuality] = client.getWeather(city);
                 printReport(weather, airQuality);
+                db->saveQuery(session.getCurrentUser()->id, city);
             } catch (const std::exception& e) {
                 std::cout << "\nError: " << e.what() << "\n";
             }

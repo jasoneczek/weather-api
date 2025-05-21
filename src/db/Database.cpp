@@ -48,7 +48,7 @@ Database::~Database() {
 
 // create tables if db doesn't exist
 void Database::initDB() {
-  const char* createSql = R"sql(
+  const char* createUserTableSql = R"sql(
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
@@ -58,14 +58,30 @@ void Database::initDB() {
     );
   )sql";
 
+  const char* createQueryTableSql = R"sql(
+    CREATE TABLE IF NOT EXISTS queries (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      city TEXT NOT NULL,
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(user_id) REFERENCES users(id)
+    );
+  )sql";
+
   char* errMsg = nullptr;
-  int rc = sqlite3_exec(db, createSql, nullptr, nullptr, &errMsg);
-  if (rc != SQLITE_OK) {
-    std::cerr << "Error creating database: " << errMsg << std::endl;
+
+  // create users table
+  if (sqlite3_exec(db, createUserTableSql, nullptr, nullptr, &errMsg) != SQLITE_OK) {
+    std::cerr << "Error creating users table: " << errMsg << std::endl;
     sqlite3_free(errMsg);
-    throw std::runtime_error("Could not create database");
-  } else {
-    // std::cout << "Database initialized." << std::endl;
+    throw std::runtime_error("Could not create users table");
+  }
+
+  // create queries table
+  if (sqlite3_exec(db, createQueryTableSql, nullptr, nullptr, &errMsg) != SQLITE_OK) {
+    std::cerr << "Error creating query table: " << errMsg << std::endl;
+    sqlite3_free(errMsg);
+    throw std::runtime_error("Could not create query table");
   }
 }
 
@@ -77,4 +93,24 @@ void Database::addUser(const std::string& name, const std::string& email, const 
 // expose raw sqlite3* for AuthService
 sqlite3* Database::getRawDB() const {
   return db;
+}
+
+// save weather queries
+void Database::saveQuery(int userId, const std::string& city) {
+  const char* insertSql = "INSERT INTO queries (user_id, city) VALUES (?, ?)";
+  sqlite3_stmt* stmt;
+
+  if (sqlite3_prepare_v2(db, insertSql, -1, &stmt, nullptr) != SQLITE_OK) {
+    throw std::runtime_error("Failed to prepare statement");
+  }
+
+  sqlite3_bind_int(stmt, 1, userId);
+  sqlite3_bind_text(stmt, 2, city.c_str(), -1, SQLITE_TRANSIENT);
+
+  if (sqlite3_step(stmt) != SQLITE_DONE) {
+    sqlite3_finalize(stmt);
+    throw std::runtime_error("Failed to execute statement");
+  }
+
+  sqlite3_finalize(stmt);
 }
