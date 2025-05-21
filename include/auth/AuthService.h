@@ -18,7 +18,7 @@ class AuthService {
     explicit AuthService(std::shared_ptr<Database> db);
 
     // added a new parameter for the raw password
-    bool registerUser(const std::string& name, const std::string& email, const std::string& password);
+    std::optional<User> registerUser(const std::string& name, const std::string& email, const std::string& password);
 
     std::optional<User> login(const std::string& email, const std::string& password);
 };

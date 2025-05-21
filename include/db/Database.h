@@ -14,7 +14,7 @@ class Database {
     sqlite3* getRawDB() const; // to safely expose raw pointer
 
     // added parameters
-    void addUser(const std::string& name, const std::string& email, const std::string& passwordHash, const std::string& role = "user");
+    int addUser(const std::string& name, const std::string& email, const std::string& passwordHash, const std::string& role = "user");
 
     void saveQuery(int userId, const std::string& city);
 

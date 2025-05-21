@@ -40,11 +40,12 @@ void AppUI::run() {
             std::getline(std::cin, password);
 
             // try to register using authservice
-            if (auth.registerUser(name, email, password)) {
+            auto registeredUser = auth.registerUser(name, email, password);
+            if (registeredUser) {
                 std::cout << "Successfully registered!\n";
 
-                // create a temp user object for the session
-                session.login(User(-1, name, "user"));
+                // fixed to contain correct user ID
+                session.login(*registeredUser);
             } else {
                 std::cout << "Failed to register!\n";
                 return;

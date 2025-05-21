@@ -86,8 +86,9 @@ void Database::initDB() {
 }
 
 // call insert user helper function
-void Database::addUser(const std::string& name, const std::string& email, const std::string& passwordHash, const std::string& role) {
+int Database::addUser(const std::string& name, const std::string& email, const std::string& passwordHash, const std::string& role) {
   insertUser(db, name, email, passwordHash, role);
+  return static_cast<int>(sqlite3_last_insert_rowid(db));
 }
 
 // expose raw sqlite3* for AuthService

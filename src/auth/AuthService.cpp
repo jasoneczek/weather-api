@@ -35,13 +35,13 @@ std::optional<User> AuthService::login(const std::string& email, const std::stri
 AuthService::AuthService(std::shared_ptr<Database> db)
     : db(std::move(db)) {} // move pointer into the class
 
-bool AuthService::registerUser(const std::string& name, const std::string& email, const std::string& password) {
+std::optional<User> AuthService::registerUser(const std::string& name, const std::string& email, const std::string& password) {
   try {
     std::string hash = PasswordManager::hash(password);
-    db->addUser(name, email, hash);
-    return true;
+    int userId = db->addUser(name, email, hash);
+    return User(userId, name, "user");
   } catch (const std::exception& e) {
       std::cerr << e.what() << std::endl;
-      return false;
+      return std::nullopt;
   }
 }
