@@ -1,5 +1,8 @@
 #include "db/Database.h"
+#include "models/Query.h"
+
 #include <iostream>
+#include <vector>
 
 // helper function to insert a new user into users table
 // static - only Database.cpp has access
@@ -114,4 +117,25 @@ void Database::saveQuery(int userId, const std::string& city) {
   }
 
   sqlite3_finalize(stmt);
+}
+
+std::vector<Query> Database::getRecentQueries(int userId) {
+  std::vector<Query> queries;
+  const char* viewQueryTableSql = "SELECT id, city, timestamp FROM queries WHERE user_id = ? ORDER BY timestamp DESC LIMIT 10;";
+  sqlite3_stmt* stmt;
+
+  if (sqlite3_prepare_v2(db, viewQueryTableSql, -1, &stmt, nullptr) != SQLITE_OK) {
+    throw std::runtime_error("Failed to prepare statement");
+  }
+  sqlite3_bind_int(stmt, 1, userId);
+
+  while (sqlite3_step(stmt) == SQLITE_ROW) {
+    int id = sqlite3_column_int(stmt, 0);
+    std::string city = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+    std::string timestamp = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+    queries.emplace_back(id, city, timestamp);
+  }
+
+  sqlite3_finalize(stmt);
+  return queries;
 }

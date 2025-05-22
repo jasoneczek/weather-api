@@ -2,6 +2,9 @@
 #define PASSWORDMANAGER_H
 
 #include <string>
+#include <boost/uuid/detail/md5.hpp>
+#include <boost/algorithm/hex.hpp>
+#include <iterator>
 
 class PasswordManager {
   public:

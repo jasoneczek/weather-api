@@ -3,3 +3,4 @@ weather_app
 .DS_Store
 .idea/
 /data/weather.sqlite
+identifier.sqlite

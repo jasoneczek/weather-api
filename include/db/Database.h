@@ -2,7 +2,9 @@
 #define DATABASE_H
 
 #include <sqlite3.h>
+#include <models/Query.h>
 #include <string>
+#include <vector>
 
 
 
@@ -17,6 +19,8 @@ class Database {
     int addUser(const std::string& name, const std::string& email, const std::string& passwordHash, const std::string& role = "user");
 
     void saveQuery(int userId, const std::string& city);
+
+    std::vector<Query> getRecentQueries(int userId);
 
   private:
     sqlite3 *db; // pointer to database connection

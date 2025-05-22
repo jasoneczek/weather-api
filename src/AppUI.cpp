@@ -111,7 +111,7 @@ void AppUI::run() {
     std::string city;
 
     while (true) {
-        std::cout << "\nEnter:\n[1] Get weather\n[2] Logout\n[0] Exit program\n> ";
+        std::cout << "\nEnter:\n[1] Get weather\n[2] Logout\n[3] View recent cities\n[0] Exit program\n> ";
         std::string choice;
         std::getline(std::cin, choice);
 
@@ -124,6 +124,19 @@ void AppUI::run() {
             std::cout << "Logging out...\n";
             session.logout();
             return run(); // restart login or register
+        }
+
+        if (choice == "3") {
+            auto history = db->getRecentQueries(session.getCurrentUser()->id);
+            if (history.empty()) {
+                std::cout << "No records found!\n";
+            } else {
+                std::cout << "\nRecent Cities:\n";
+                for (const auto& query : history) {
+                    std::cout << query.city << "\n";
+                }
+            }
+            continue;
         }
 
         if (choice == "1") {
