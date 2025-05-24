@@ -32,25 +32,64 @@ void AppUI::run() {
 
         // register
         if (choice == "1") {
-            std::cout << "Enter your name: ";
-            std::getline(std::cin, name);
-            std::cout << "Enter your email: ";
-            std::getline(std::cin, email);
-            std::cout << "Enter your password: ";
-            std::getline(std::cin, password);
+            while (true) {
+                std::cout << "Enter your name: ";
+                std::getline(std::cin, name);
 
-            // try to register using authservice
-            auto registeredUser = auth.registerUser(name, email, password);
-            if (registeredUser) {
-                std::cout << "Successfully registered!\n";
+                while (true) {
+                    std::cout << "Enter your email: ";
+                    std::getline(std::cin, email);
+                    if (email == "0") return;
 
-                // fixed to contain correct user ID
-                session.login(*registeredUser);
-            } else {
-                std::cout << "Failed to register!\n";
-                return;
+                    // validate email
+                    auto atPosition = email.find('@');
+                    auto dotPosition = email.find('.', atPosition + 1);
+
+                    bool isValidEmail = (
+                        atPosition != std::string::npos &&
+                        dotPosition != std::string::npos &&
+                        atPosition > 0 &&
+                        dotPosition > atPosition + 1 &&
+                        dotPosition < email.length() -1
+                    );
+
+                    if (isValidEmail) break;
+
+                    std::cout << "Invalid email format! Try again or 0 to exit.\n";
+                }
+
+                // password
+                while (true) {
+                    std::cout << "Enter your password (at least 8 characters and 1 number): ";
+                    std::getline(std::cin, password);
+                    if (password == "0") return;
+
+                    // password validation
+                    bool hasDigit = std::any_of(password.begin(), password.end(), ::isdigit);
+                    if (password.length() >= 8 && hasDigit) {
+                        break;
+                    }
+
+                    std::cout << "Invalid password! Password must be at least 8 characters and include a number. Try again or 0 to exit.\n";
+                }
+
+
+                // try to register using authservice
+                auto registeredUser = auth.registerUser(name, email, password);
+                if (registeredUser) {
+                    std::cout << "Successfully registered!\n";
+                    session.login(*registeredUser);
+                    break;
+                }
+
+                std::cout << "Failed to register! Try again or 0 to cancel.\n";
+                std::string cancel;
+                std::getline(std::cin, cancel);
+                if (cancel == "0") return;
             }
         }
+
+
 
         // login
         else if (choice == "2") {
@@ -66,12 +105,12 @@ void AppUI::run() {
                     session.login(*user);
                     std::cout << "Login successful!\n";
                     break;
-                } else {
-                    std::cout << "Incorrect email or password. Try again or type 0 to exit.\n";
-                    std::string cancel;
-                    std::getline(std::cin, cancel);
-                    if (cancel == "0") return;
                 }
+
+                std::cout << "Incorrect email or password. Try again or type 0 to exit.\n";
+                std::string cancel;
+                std::getline(std::cin, cancel);
+                if (cancel == "0") return;
             }
         }
 
