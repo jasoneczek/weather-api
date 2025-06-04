@@ -11,6 +11,16 @@ include_directories(${Boost_INCLUDE_DIRS})
 find_package(SQLite3 REQUIRED)
 include_directories(${SQLite3_INCLUDE_DIRS})
 
+# OATPP
+find_package(oatpp REQUIRED)
+include_directories(/usr/local/include)
+
+# include_directories(${oatpp_INCLUDE_DIRS})
+# include_directories(/usr/local/include)
+
+
+
+# PATHS
 include_directories(include)
 include_directories(/opt/homebrew/include)
 
@@ -27,7 +37,17 @@ add_executable(weather_app
         src/auth/AuthService.cpp
         src/auth/PasswordManager.cpp
         src/auth/SessionManager.cpp
+
+        # -- for oatppfiles soon
+        # src/WeatherController.cpp
+        # src/AppComponent.cpp
 )
 
-# LINK SQL LIBRARIES
-target_link_libraries(weather_app PRIVATE SQLite::SQLite3)
+# LINK LIBRARIES
+target_link_libraries(weather_app
+        PRIVATE
+        SQLite::SQLite3
+        oatpp::oatpp
+        # oatpp::oatpp-json
+        # oatpp::oatpp-test
+)
