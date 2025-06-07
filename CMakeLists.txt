@@ -38,9 +38,7 @@ add_executable(weather_app
         src/auth/PasswordManager.cpp
         src/auth/SessionManager.cpp
 
-        # -- for oatppfiles soon
-        # src/WeatherController.cpp
-        # src/AppComponent.cpp
+        server.cpp
 )
 
 # LINK LIBRARIES
