@@ -1,6 +1,11 @@
 #include "include/api/AppComponent.h"
 
 #include "include/api/WeatherController.h"
+#include "include/api/AuthController.h"
+
+#include "db/Database.h"
+#include "auth/AuthService.h"
+#include "auth/SessionManager.h"
 
 #include "oatpp/network/Server.hpp"
 
@@ -11,21 +16,23 @@ void runServer() {
 
     AppComponent components; // Create scope Environment components
 
-    /* Get router component */
+    // get components from AppComponent
     OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
-
-    // oatpp::web::server::api::Endpoints docEndpoints;
-
-    // docEndpoints.append(router->addController(WeatherController::createShared())->getEndpoints());
-
-    // router->addController(oatpp::swagger::Controller::createShared(docEndpoints));
-    router->addController(std::make_shared<WeatherController>());
-
-    /* Get connection handler component */
+    OATPP_COMPONENT(std::shared_ptr<oatpp::web::mime::ContentMappers>, contentMappers);
     OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>, connectionHandler);
-
-    /* Get connection provider component */
     OATPP_COMPONENT(std::shared_ptr<oatpp::network::ServerConnectionProvider>, connectionProvider);
+
+    // add weather controller
+    router->addController(std::make_shared<WeatherController>(contentMappers));
+
+    // set up auto service and session manager
+    auto database = std::make_shared<Database>("weather.sqlite");
+    auto authService = std::make_shared<AuthService>(database);
+    auto sessionManager = std::make_shared<SessionManager>();
+
+    // add auth controller
+    auto authController = std::make_shared<AuthController>(contentMappers, authService, sessionManager);
+    router->addController(authController);
 
     /* create server */
     oatpp::network::Server server(connectionProvider, connectionHandler);
