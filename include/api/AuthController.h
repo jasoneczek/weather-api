@@ -52,9 +52,32 @@ class AuthController : public oatpp::web::server::api::ApiController {
       return createResponse(Status::CODE_400, e.what());
     }
   }
+
+  ENDPOINT ("POST", "/login", loginUser,
+           BODY_STRING(String, body)) {
+    try {
+      json parsed = json::parse(body->c_str());
+
+      std::string email = parsed.value("email", "");
+      std::string password = parsed.value("password", "");
+
+      if (email.empty() || password.empty()) {
+        return createResponse(Status::CODE_400, "Missing email/password");
+      }
+
+      auto userOpt = authService->login(email, password);
+      if (userOpt) {
+        sessionManager->login(*userOpt);
+        return createResponse(Status::CODE_200, "User login successfully");
+      }
+
+      return createResponse(Status::CODE_400, "Invalid email or password");
+
+    } catch (const std::exception &e) {
+      return createResponse(Status::CODE_400, e.what());
+    }
+  }
 };
-
-
 
 #include OATPP_CODEGEN_END(ApiController)
 
