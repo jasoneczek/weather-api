@@ -10,7 +10,7 @@
 #include "oatpp/macro/component.hpp"
 
 class AppComponent {
-  public:
+public:
 
   /**
   * Create ObjectMapper component to serialize/deserialize DTOs in Controller's API

@@ -4,3 +4,4 @@ weather_app
 .idea/
 /data/weather.sqlite
 identifier.sqlite
+frontend/
